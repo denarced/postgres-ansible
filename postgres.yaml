@@ -1,0 +1,32 @@
+- hosts: all
+  tasks:
+   - name: Generate locales for PostgreSQL installation
+     environment:
+       LANGUAGE: en_US.UTF-8
+     copy: src=locale dest=/etc/default/locale
+     register: genlocales
+     become: yes
+   - name: Install PostgreSQL server
+     apt: name=postgresql
+     # Locales must be setup first or otherwise PostgreSQL installation will not
+     # be completed. Due to lack of at least LANGUAGE, PostgreSQL cluster won't
+     # be initialized (initdb).
+     when: genlocales|success
+     register: installpostgres
+     become: yes
+   # The next task's module (postgresql_user) requires that psycopg2 is
+   # installed.
+   - name: Install psycopg2 in order to add PostgreSQL user
+     apt: name=python-psycopg2
+     register: installpsycopg2
+     become: yes
+   - name: Add PostgreSQL user
+     postgresql_user: name=vagrant password=protekto role_attr_flags=CREATEDB,LOGIN
+     when: installpostgres|success and installpsycopg2|success
+     register: addpostgresuser
+     become: yes
+     become_user: postgres
+   - name: Add PostgreSQL database
+     # psycopg2 uses unix socket if only database name and username is provided
+     postgresql_db: name=vagrantdb owner=vagrant login_user=vagrant
+     when: addpostgresuser|success

@@ -1,0 +1,35 @@
+= postgres-ansible
+
+An example playbook to setup PostgreSQL database server on Ubuntu 14.04. There's
+also a Vagrantfile that'll setup the Ubuntu virtual machine and execute the
+Ansible playbook on it.
+
+== Why?
+
+For the beginners this is a good template but there's also the part about
+setting up a locale before installing PostgreSQL that's not obvious.
+
+== Requirements
+
+I developed this on Ubuntu 16.04 and the following were installed:
+
+- Ansible 2.1.1.0
+- Vagrant 1.8.1
+
+Ansible was installed according to
+http://docs.ansible.com/ansible/intro_installation.html#latest-releases-via-apt-ubuntu[official
+instructions]:
+```
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt update
+sudo apt install ansible
+```
+
+Vagrant from the Ubuntu repos:
+```
+sudo apt install vagrant
+```
+
+== Setup
+
+Just clone this repo and execute `vagrant up`.
